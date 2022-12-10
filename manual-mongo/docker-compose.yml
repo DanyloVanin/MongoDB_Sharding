@@ -1,0 +1,36 @@
+version: '3.1'
+
+services:
+
+  mongos:
+    image: mongo:6.0.3
+    entrypoint: mongos
+    # hostname: mongos
+    command: --configdb config/mongo-config:27019 --bind_ip_all
+    ports:
+      - "27017:27017"
+
+  # default port - 27019
+  mongo-config:
+    image: mongo:6.0.3
+    command: --configsvr --replSet config
+    hostname: mongo-config
+
+  # default port - 27018
+  mongo-shard1:
+    image: mongo:6.0.3
+    command: --shardsvr --replSet shard1
+    hostname: mongo-shard1
+
+  # default port - 27018
+  mongo-shard2:
+    image: mongo:6.0.3
+    command: --shardsvr --replSet shard2
+    hostname: mongo-shard2
+
+  mongo-express:
+    image: mongo-express      
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongos:27017/
